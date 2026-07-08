@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD考试模拟系统</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏥 注册营养师(RD)考试模拟系统</h1>
+            <p>200道题目 | 单选题 + 多选题</p>
+        </header>
+
+        <main class="main-content">
+            <section class="hero">
+                <h2>欢迎使用RD考试模拟系统</h2>
+                <p>这是一个完整的注册营养师考试模拟平台，帮助你更好地准备考试。</p>
+                
+                <div class="info-cards">
+                    <div class="card">
+                        <h3>📚 200道题目</h3>
+                        <p>涵盖所有RD考试的重要内容</p>
+                    </div>
+                    <div class="card">
+                        <h3>⏱️ 实时计时</h3>
+                        <p>模拟真实考试环境</p>
+                    </div>
+                    <div class="card">
+                        <h3>📊 详细分析</h3>
+                        <p>完整的答题报告和解析</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="userName">请输入你的名字：</label>
+                    <input type="text" id="userName" placeholder="输入你的名字" value="考生">
+                </div>
+
+                <button class="btn btn-primary" onclick="startExam()">开始考试</button>
+                <a href="exam.html" class="btn btn-secondary" style="display:none;" id="resumeBtn">继续考试</a>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 RD考试模拟系统 | 帮助你成为优秀的营养师</p>
+        </footer>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        function startExam() {
+            const userName = document.getElementById('userName').value;
+            if (!userName.trim()) {
+                alert('请输入你的名字');
+                return;
+            }
+            
+            // 保存用户信息到本地存储
+            localStorage.setItem('userName', userName);
+            
+            // 跳转到考试页面
+            window.location.href = 'exam.html';
+        }
+
+        // 页面加载时检查是否有未完成的考试
+        window.addEventListener('load', () => {
+            const savedExamId = localStorage.getItem('currentExamId');
+            if (savedExamId) {
+                document.getElementById('resumeBtn').style.display = 'inline-block';
+            }
+        });
+    </script>
+</body>
+</html>
