@@ -3,97 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RD考试 - 答题页面</title>
+    <title>RD考试 - 答题</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <div class="exam-container">
-        <!-- 侧边栏 -->
-        <aside class="sidebar">
-            <div class="exam-info">
-                <h3>考试信息</h3>
-                <div class="timer">
-                    <span class="label">用时</span>
-                    <span class="time" id="examTimer">00:00:00</span>
-                </div>
-                <div class="progress">
-                    <span class="label">进度</span>
+<body class="exam-page">
+    <div class="exam-wrapper">
+        <!-- 左侧栏：进度和导航 -->
+        <aside class="sidebar-left">
+            <div class="exam-progress">
+                <h3>考试进度</h3>
+                <div class="progress-bar-container">
                     <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
+                        <div class="progress-bar-fill" id="progressBarFill"></div>
                     </div>
-                    <span class="progress-text" id="progressText">0/200</span>
-                </div>
-                <div class="score-preview">
-                    <span class="label">预计分数</span>
-                    <span class="score" id="scorePreview">0%</span>
+                    <div class="progress-text" id="progressText">0/200</div>
                 </div>
             </div>
 
-            <div class="question-navigator">
-                <h4>题目导航</h4>
-                <div class="question-grid" id="questionGrid"></div>
+            <div class="exam-timer">
+                <h3>用时统计</h3>
+                <div class="timer-display" id="examTimer">00:00:00</div>
+                <p class="timer-label">小时:分钟:秒</p>
             </div>
 
-            <div class="exam-actions">
-                <button class="btn btn-secondary" onclick="showExitConfirm()">退出考试</button>
-                <button class="btn btn-success" onclick="finishExam()">提交答卷</button>
+            <div class="exam-stats">
+                <h3>答题统计</h3>
+                <div class="stat-item">
+                    <span class="stat-label">已答题</span>
+                    <span class="stat-value" id="answeredCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">未答题</span>
+                    <span class="stat-value" id="unansweredCount">200</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">预计分数</span>
+                    <span class="stat-value" id="scorePreview">0%</span>
+                </div>
+            </div>
+
+            <div class="questions-nav">
+                <h3>题目导航</h3>
+                <div class="questions-grid" id="questionsGrid">
+                    <!-- 题号按钮将动态生成 -->
+                </div>
+            </div>
+
+            <div class="sidebar-buttons">
+                <button class="btn-secondary" onclick="showExitConfirm()">退出考试</button>
+                <button class="btn-success" onclick="finishExam()">提交答卷</button>
             </div>
         </aside>
 
-        <!-- 主区域 -->
-        <main class="main-area">
+        <!-- 中间主区域：题目内容 -->
+        <main class="main-content">
             <div class="exam-header">
-                <h2>注册营养师(RD)考试模拟</h2>
-                <div class="user-info" id="userInfo">欢迎，考生</div>
+                <div class="header-left">
+                    <h2>注册营养师(RD)考试模拟</h2>
+                    <span class="user-greeting" id="userGreeting">欢迎，考生</span>
+                </div>
+                <div class="header-right">
+                    <span class="question-counter" id="questionCounter">第 1 / 200 题</span>
+                </div>
             </div>
 
-            <div class="question-container">
-                <div class="question-header">
-                    <span class="question-number" id="questionNumber">第1题</span>
-                    <span class="question-category" id="questionCategory">营养学基础</span>
-                    <span class="question-type" id="questionType">单选题</span>
+            <div class="question-display">
+                <!-- 题目分类和类型 -->
+                <div class="question-meta">
+                    <span class="badge badge-category" id="questionCategory">营养学基础</span>
+                    <span class="badge badge-type" id="questionType">单选题</span>
                 </div>
 
-                <div class="question-content" id="questionContent">
-                    <!-- 题目内容将通过JS动态加载 -->
+                <!-- 题目文本 -->
+                <div class="question-text" id="questionContent">
+                    <!-- 题目将在这里动态加载 -->
                 </div>
 
-                <div class="options-container" id="optionsContainer">
-                    <!-- 选项将通过JS动态加载 -->
+                <!-- 选项列表 -->
+                <div class="options-list" id="optionsContainer">
+                    <!-- 选项将在这里动态加载 -->
                 </div>
 
-                <div class="question-navigation">
-                    <button class="btn btn-secondary" onclick="previousQuestion()" id="prevBtn">⬅️ 上一题</button>
-                    <button class="btn btn-secondary" onclick="nextQuestion()" id="nextBtn">下一题 ➡️</button>
+                <!-- 导航按钮 -->
+                <div class="question-nav">
+                    <button class="btn-nav btn-prev" onclick="previousQuestion()" id="prevBtn">
+                        <span class="nav-icon">⬅</span>
+                        <span>上一题</span>
+                    </button>
+                    <button class="btn-nav btn-next" onclick="nextQuestion()" id="nextBtn">
+                        <span>下一题</span>
+                        <span class="nav-icon">➡</span>
+                    </button>
                 </div>
             </div>
         </main>
 
-        <!-- 答题卡 -->
-        <aside class="right-sidebar">
-            <div class="answer-card">
+        <!-- 右侧栏：答题卡 -->
+        <aside class="sidebar-right">
+            <div class="answer-sheet">
                 <h3>答题卡</h3>
-                <div class="answer-summary">
-                    <div class="summary-item">
-                        <span class="label">已答</span>
-                        <span class="count" id="answeredCount">0</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="label">未答</span>
-                        <span class="count" id="unansweredCount">200</span>
-                    </div>
-                </div>
-
-                <div class="review-section">
-                    <h4>标记复习</h4>
-                    <div class="marked-questions" id="markedQuestions">
-                        <p style="color: #999; text-align: center; padding: 20px;">暂无标记</p>
-                    </div>
-                </div>
-
-                <div class="legend">
+                
+                <div class="sheet-legend">
                     <div class="legend-item">
-                        <span class="legend-box" style="background: #e0e0e0;"></span>
+                        <span class="legend-box" style="background: #e8e8e8;"></span>
                         <span>未答</span>
                     </div>
                     <div class="legend-item">
@@ -101,12 +113,19 @@
                         <span>正确</span>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-box" style="background: #f44336;"></span>
+                        <span class="legend-box" style="background: #FF6B6B;"></span>
                         <span>错误</span>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-box" style="background: #FF9800;"></span>
+                        <span class="legend-box" style="background: #FFA500;"></span>
                         <span>标记</span>
+                    </div>
+                </div>
+
+                <div class="marked-list">
+                    <h4>标记的题目</h4>
+                    <div class="marked-questions" id="markedQuestions">
+                        <p class="empty-state">暂无标记</p>
                     </div>
                 </div>
             </div>
@@ -115,38 +134,60 @@
 
     <!-- 模态框：确认退出 -->
     <div class="modal" id="exitModal">
+        <div class="modal-overlay" onclick="closeModal('exitModal')"></div>
         <div class="modal-content">
-            <h3>确认退出考试</h3>
-            <p>你确定要退出考试吗？你已作答的题目会被保存。</p>
+            <h3>⚠️ 确认退出</h3>
+            <p>你确定要退出考试吗？已作答的题目会被保存。</p>
             <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="closeModal('exitModal')">取消</button>
-                <button class="btn btn-danger" onclick="exitExam()">确认退出</button>
+                <button class="btn-secondary" onclick="closeModal('exitModal')">取消</button>
+                <button class="btn-danger" onclick="exitExam()">确认退出</button>
             </div>
         </div>
     </div>
 
-    <!-- 模态框：完成考试 -->
-    <div class="modal" id="completeModal">
+    <!-- 模态框：提交确认 -->
+    <div class="modal" id="submitModal">
+        <div class="modal-overlay" onclick="closeModal('submitModal')"></div>
         <div class="modal-content">
-            <h3>考试完成</h3>
-            <p>你的考试已完成</p>
-            <div class="exam-results">
-                <div class="result-item">
-                    <span class="label">用时</span>
-                    <span class="value" id="finalDuration">00:00:00</span>
+            <h3>✓ 确认提交</h3>
+            <p id="submitWarning">还有 0 道题目未作答，确定要提交吗？</p>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeModal('submitModal')">继续做题</button>
+                <button class="btn-success" onclick="confirmSubmit()">确认提交</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：考试完成 -->
+    <div class="modal" id="completeModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content full-width">
+            <div class="complete-header">
+                <h3>✨ 考试完成！</h3>
+            </div>
+            <div class="complete-body">
+                <div class="score-circle">
+                    <span class="score-number" id="finalScore">0</span>
+                    <span class="score-unit">%</span>
                 </div>
-                <div class="result-item">
-                    <span class="label">正确率</span>
-                    <span class="value" id="finalScore">0%</span>
-                </div>
-                <div class="result-item">
-                    <span class="label">正确题数</span>
-                    <span class="value" id="finalCorrect">0/200</span>
+                <div class="result-details">
+                    <div class="result-item">
+                        <span class="result-label">用时</span>
+                        <span class="result-value" id="finalDuration">00:00:00</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">正确题数</span>
+                        <span class="result-value" id="finalCorrect">0/200</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">正确率</span>
+                        <span class="result-value" id="finalAccuracy">0%</span>
+                    </div>
                 </div>
             </div>
             <div class="modal-buttons">
-                <button class="btn btn-primary" onclick="viewResults()">查看详细成绩</button>
-                <button class="btn btn-secondary" onclick="goHome()">返回首页</button>
+                <button class="btn-secondary" onclick="goHome()">返回首页</button>
+                <button class="btn-primary" onclick="viewResults()">查看详细成绩</button>
             </div>
         </div>
     </div>
