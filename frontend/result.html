@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD考试成绩</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>考试成绩</h1>
+        </header>
+
+        <main class="result-container">
+            <div class="result-card">
+                <div class="score-display">
+                    <div class="score-circle">
+                        <span class="score-number" id="scoreDisplay">0</span>
+                        <span class="score-unit">%</span>
+                    </div>
+                </div>
+
+                <div class="result-details">
+                    <h2 id="scoreLevel">成绩评价</h2>
+                    
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">总题数</span>
+                            <span class="detail-value" id="totalQuestions">200</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">正确题数</span>
+                            <span class="detail-value" id="correctCount">0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">错误题数</span>
+                            <span class="detail-value" id="wrongCount">0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">用时</span>
+                            <span class="detail-value" id="duration">00:00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-analysis">
+                    <h3>分类成绩分析</h3>
+                    <div class="category-list" id="categoryList">
+                        <!-- 分类成绩将动态加载 -->
+                    </div>
+                </div>
+
+                <div class="error-analysis">
+                    <h3>错题分析</h3>
+                    <div class="error-list" id="errorList">
+                        <!-- 错题将动态加载 -->
+                    </div>
+                </div>
+
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="viewAnswerSheet()">查看答题卡</button>
+                    <button class="btn btn-secondary" onclick="goHome()">返回首页</button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 RD考试模拟系统</p>
+        </footer>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script>
+        let examData = null;
+
+        window.addEventListener('load', () => {
+            loadResults();
+        });
+
+        function loadResults() {
+            const examId = localStorage.getItem('currentExamId');
+            if (!examId) {
+                alert('未找到考试数据，请重新开始考试');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // 从本地存储获取考试数据
+            const savedData = localStorage.getItem(`exam_${examId}`);
+            if (savedData) {
+                examData = JSON.parse(savedData);
+                displayResults();
+            } else {
+                alert('未找到考试数据');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function displayResults() {
+            if (!examData) return;
+
+            const score = examData.score || 0;
+            const correctCount = examData.correctAnswers || 0;
+            const totalQuestions = examData.totalQuestions || 200;
+            const wrongCount = totalQuestions - correctCount;
+            const duration = formatTime(examData.duration || 0);
+
+            // 显示分数
+            document.getElementById('scoreDisplay').textContent = score.toFixed(1);
+            
+            // 评价等级
+            let level = '需要加油';
+            if (score >= 90) level = '优秀';
+            else if (score >= 80) level = '良好';
+            else if (score >= 70) level = '及格';
+            document.getElementById('scoreLevel').textContent = level;
+
+            // 显示详细信息
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('wrongCount').textContent = wrongCount;
+            document.getElementById('duration').textContent = duration;
+
+            // 显示分类成绩
+            displayCategoryAnalysis();
+
+            // 显示错题
+            displayErrors();
+        }
+
+        function displayCategoryAnalysis() {
+            // 这里可以根据不同分类显示成绩
+            const categoryList = document.getElementById('categoryList');
+            categoryList.innerHTML = `
+                <div class="category-item">
+                    <span class="category-name">所有分类</span>
+                    <span class="category-score">${examData.score?.toFixed(1)}%</span>
+                </div>
+            `;
+        }
+
+        function displayErrors() {
+            const errorList = document.getElementById('errorList');
+            // 这里可以显示具体的错题
+            if (examData.wrongQuestions && examData.wrongQuestions.length > 0) {
+                errorList.innerHTML = examData.wrongQuestions.slice(0, 10).map(q => `
+                    <div class="error-item">
+                        <span class="error-question">${q.question}</span>
+                        <span class="error-answer">你的答案: ${q.userAnswer.join(',')}</span>
+                        <span class="error-correct">正确答案: ${q.correct.join(',')}</span>
+                    </div>
+                `).join('');
+            } else {
+                errorList.innerHTML = '<p style="text-align: center; color: #999;">恭喜！没有错题</p>';
+            }
+        }
+
+        function viewAnswerSheet() {
+            alert('答题卡详情功能正在开发中...');
+        }
+
+        function goHome() {
+            localStorage.removeItem('currentExamId');
+            localStorage.removeItem(`exam_${examData.examId}`);
+            window.location.href = 'index.html';
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>
