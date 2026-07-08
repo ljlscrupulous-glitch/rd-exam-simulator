@@ -1,4 +1,4 @@
-/* 考试逻辑模块 */
+/* 考试逻辑模块 - 完全兼容新UI */
 
 let examState = {
     examId: null,
@@ -28,7 +28,7 @@ async function initExam() {
 
         // 获取用户信息
         const userName = localStorage.getItem('userName') || '考生';
-        document.getElementById('userInfo').textContent = `欢迎，${userName}`;
+        document.getElementById('userGreeting').textContent = `欢迎，${userName}`;
 
         // 从本地存储检查是否恢复考试
         const savedExamId = localStorage.getItem('currentExamId');
@@ -82,24 +82,26 @@ async function initExam() {
  */
 function initializeUI() {
     // 创建题目导航
-    const questionGrid = document.getElementById('questionGrid');
-    questionGrid.innerHTML = '';
-    allQuestions.forEach((q, index) => {
-        const btn = document.createElement('button');
-        btn.className = 'question-btn';
-        btn.textContent = index + 1;
-        btn.onclick = () => goToQuestion(index);
-        if (index === examState.currentQuestionIndex) {
-            btn.classList.add('active');
-        }
-        if (examState.answers[q.id] !== null) {
-            btn.classList.add('answered');
-        }
-        if (examState.markedQuestions.has(q.id)) {
-            btn.classList.add('marked');
-        }
-        questionGrid.appendChild(btn);
-    });
+    const questionsGrid = document.getElementById('questionsGrid');
+    if (questionsGrid) {
+        questionsGrid.innerHTML = '';
+        allQuestions.forEach((q, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'question-btn';
+            btn.textContent = index + 1;
+            btn.onclick = () => goToQuestion(index);
+            if (index === examState.currentQuestionIndex) {
+                btn.classList.add('active');
+            }
+            if (examState.answers[q.id] !== null) {
+                btn.classList.add('answered');
+            }
+            if (examState.markedQuestions.has(q.id)) {
+                btn.classList.add('marked');
+            }
+            questionsGrid.appendChild(btn);
+        });
+    }
 
     // 更新统计信息
     updateStatistics();
@@ -115,7 +117,10 @@ function startTimer() {
 
     examState.timerInterval = setInterval(() => {
         examState.elapsedSeconds = Math.floor((Date.now() - examState.startTime) / 1000);
-        document.getElementById('examTimer').textContent = formatTime(examState.elapsedSeconds);
+        const timerEl = document.getElementById('examTimer');
+        if (timerEl) {
+            timerEl.textContent = formatTime(examState.elapsedSeconds);
+        }
     }, 1000);
 }
 
@@ -130,48 +135,62 @@ function displayQuestion(index) {
     examState.currentQuestionIndex = index;
     const question = allQuestions[index];
 
-    // 更新题目头部
-    document.getElementById('questionNumber').textContent = `第${index + 1}题`;
-    document.getElementById('questionCategory').textContent = question.category;
-    document.getElementById('questionType').textContent = question.type === 'single' ? '单选题' : '多选题';
+    // 更新题目计数器
+    const counterEl = document.getElementById('questionCounter');
+    if (counterEl) {
+        counterEl.textContent = `第 ${index + 1} / 200 题`;
+    }
+
+    // 更新题目分类和类型
+    const categoryEl = document.getElementById('questionCategory');
+    const typeEl = document.getElementById('questionType');
+    if (categoryEl) categoryEl.textContent = question.category;
+    if (typeEl) typeEl.textContent = question.type === 'single' ? '单选题' : '多选题';
 
     // 显示题目内容
-    document.getElementById('questionContent').textContent = question.question;
+    const contentEl = document.getElementById('questionContent');
+    if (contentEl) {
+        contentEl.textContent = question.question;
+    }
 
     // 显示选项
-    const container = document.getElementById('optionsContainer');
-    container.innerHTML = '';
+    const optionsContainer = document.getElementById('optionsContainer');
+    if (optionsContainer) {
+        optionsContainer.innerHTML = '';
 
-    Object.entries(question.options).forEach(([key, value]) => {
-        const option = document.createElement('div');
-        option.className = 'option';
-        
-        const isSelected = examState.answers[question.id] && 
-            (Array.isArray(examState.answers[question.id]) 
-                ? examState.answers[question.id].includes(key)
-                : examState.answers[question.id] === key);
+        Object.entries(question.options).forEach(([key, value]) => {
+            const option = document.createElement('div');
+            option.className = 'option';
+            
+            const isSelected = examState.answers[question.id] && 
+                (Array.isArray(examState.answers[question.id]) 
+                    ? examState.answers[question.id].includes(key)
+                    : examState.answers[question.id] === key);
 
-        if (isSelected) {
-            option.classList.add('selected');
-        }
+            if (isSelected) {
+                option.classList.add('selected');
+            }
 
-        option.innerHTML = `
-            <div class="option-check">
-                ${isSelected ? '✓' : ''}
-            </div>
-            <span class="option-label">${key}</span>
-            <span class="option-text">${value}</span>
-        `;
+            option.innerHTML = `
+                <div class="option-checkbox">
+                    ${isSelected ? '✓' : ''}
+                </div>
+                <span class="option-label">${key}</span>
+                <span class="option-text">${value}</span>
+            `;
 
-        option.onclick = () => selectOption(question.id, key, question.type);
-        container.appendChild(option);
-    });
+            option.onclick = () => selectOption(question.id, key, question.type);
+            optionsContainer.appendChild(option);
+        });
+    }
 
     // 更新导航按钮
-    document.getElementById('prevBtn').disabled = index === 0;
-    document.getElementById('nextBtn').disabled = index === allQuestions.length - 1;
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    if (prevBtn) prevBtn.disabled = index === 0;
+    if (nextBtn) nextBtn.disabled = index === allQuestions.length - 1;
 
-    // 更新题目导航
+    // 更新题目导航按钮状态
     const questionBtns = document.querySelectorAll('.question-btn');
     questionBtns.forEach((btn, i) => {
         btn.classList.remove('active');
@@ -296,11 +315,20 @@ function updateStatistics() {
     const scorePercent = (correctCount / allQuestions.length) * 100;
 
     // 更新UI
-    document.getElementById('answeredCount').textContent = answeredCount;
-    document.getElementById('unansweredCount').textContent = unansweredCount;
-    document.getElementById('progressFill').style.width = progressPercent + '%';
-    document.getElementById('progressText').textContent = `${answeredCount}/${allQuestions.length}`;
-    document.getElementById('scorePreview').textContent = scorePercent.toFixed(1) + '%';
+    const updateElement = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    };
+
+    updateElement('answeredCount', answeredCount);
+    updateElement('unansweredCount', unansweredCount);
+    updateElement('progressText', `${answeredCount}/200`);
+    updateElement('scorePreview', scorePercent.toFixed(1) + '%');
+
+    const progressFill = document.getElementById('progressBarFill');
+    if (progressFill) {
+        progressFill.style.width = progressPercent + '%';
+    }
 }
 
 /**
@@ -335,12 +363,20 @@ async function finishExam() {
     const unanswered = allQuestions.filter(q => examState.answers[q.id] === null);
     
     if (unanswered.length > 0) {
-        const confirmed = confirm(`还有 ${unanswered.length} 道题目未作答，确定要提交吗？`);
-        if (!confirmed) {
-            return;
-        }
+        // 显示提交确认对话框
+        document.getElementById('submitWarning').textContent = `还有 ${unanswered.length} 道题目未作答，确定要提交吗？`;
+        showModal('submitModal');
+    } else {
+        confirmSubmit();
     }
+}
 
+/**
+ * 确认提交
+ */
+async function confirmSubmit() {
+    closeModal('submitModal');
+    
     try {
         showLoading();
 
@@ -392,9 +428,15 @@ async function finishExam() {
         hideLoading();
 
         // 显示完成模态框
-        document.getElementById('finalDuration').textContent = formatTime(examState.elapsedSeconds);
-        document.getElementById('finalScore').textContent = score.toFixed(1) + '%';
-        document.getElementById('finalCorrect').textContent = `${correctCount}/${allQuestions.length}`;
+        const updateEl = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        };
+        
+        updateEl('finalDuration', formatTime(examState.elapsedSeconds));
+        updateEl('finalScore', score.toFixed(1));
+        updateEl('finalCorrect', `${correctCount}/200`);
+        updateEl('finalAccuracy', score.toFixed(1) + '%');
 
         showModal('completeModal');
 
@@ -418,6 +460,7 @@ function viewResults() {
  * 返回首页
  */
 function goHome() {
+    closeModal('completeModal');
     localStorage.removeItem('currentExamId');
     localStorage.removeItem(`exam_state_${examState.examId}`);
     window.location.href = 'index.html';
