@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD考试 - 答题页面</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="exam-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="exam-info">
+                <h3>考试信息</h3>
+                <div class="timer">
+                    <span class="label">用时</span>
+                    <span class="time" id="examTimer">00:00:00</span>
+                </div>
+                <div class="progress">
+                    <span class="label">进度</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0/200</span>
+                </div>
+                <div class="score-preview">
+                    <span class="label">预计分数</span>
+                    <span class="score" id="scorePreview">0%</span>
+                </div>
+            </div>
+
+            <div class="question-navigator">
+                <h4>题目导航</h4>
+                <div class="question-grid" id="questionGrid"></div>
+            </div>
+
+            <div class="exam-actions">
+                <button class="btn btn-secondary" onclick="showExitConfirm()">退出考试</button>
+                <button class="btn btn-success" onclick="finishExam()">提交答卷</button>
+            </div>
+        </aside>
+
+        <!-- 主区域 -->
+        <main class="main-area">
+            <div class="exam-header">
+                <h2>注册营养师(RD)考试模拟</h2>
+                <div class="user-info" id="userInfo">欢迎，考生</div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number" id="questionNumber">第1题</span>
+                    <span class="question-category" id="questionCategory">营养学基础</span>
+                    <span class="question-type" id="questionType">单选题</span>
+                </div>
+
+                <div class="question-content" id="questionContent">
+                    <!-- 题目内容将通过JS动态加载 -->
+                </div>
+
+                <div class="options-container" id="optionsContainer">
+                    <!-- 选项将通过JS动态加载 -->
+                </div>
+
+                <div class="question-navigation">
+                    <button class="btn btn-secondary" onclick="previousQuestion()" id="prevBtn">⬅️ 上一题</button>
+                    <button class="btn btn-secondary" onclick="nextQuestion()" id="nextBtn">下一题 ➡️</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- 答题卡 -->
+        <aside class="right-sidebar">
+            <div class="answer-card">
+                <h3>答题卡</h3>
+                <div class="answer-summary">
+                    <div class="summary-item">
+                        <span class="label">已答</span>
+                        <span class="count" id="answeredCount">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">未答</span>
+                        <span class="count" id="unansweredCount">200</span>
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <h4>标记复习</h4>
+                    <div class="marked-questions" id="markedQuestions">
+                        <p style="color: #999; text-align: center; padding: 20px;">暂无标记</p>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-box" style="background: #e0e0e0;"></span>
+                        <span>未答</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-box" style="background: #4CAF50;"></span>
+                        <span>正确</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-box" style="background: #f44336;"></span>
+                        <span>错误</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-box" style="background: #FF9800;"></span>
+                        <span>标记</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 模态框：确认退出 -->
+    <div class="modal" id="exitModal">
+        <div class="modal-content">
+            <h3>确认退出考试</h3>
+            <p>你确定要退出考试吗？你已作答的题目会被保存。</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal('exitModal')">取消</button>
+                <button class="btn btn-danger" onclick="exitExam()">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：完成考试 -->
+    <div class="modal" id="completeModal">
+        <div class="modal-content">
+            <h3>考试完成</h3>
+            <p>你的考试已完成</p>
+            <div class="exam-results">
+                <div class="result-item">
+                    <span class="label">用时</span>
+                    <span class="value" id="finalDuration">00:00:00</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">正确率</span>
+                    <span class="value" id="finalScore">0%</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">正确题数</span>
+                    <span class="value" id="finalCorrect">0/200</span>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="viewResults()">查看详细成绩</button>
+                <button class="btn btn-secondary" onclick="goHome()">返回首页</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/exam.js"></script>
+</body>
+</html>
